@@ -1,4 +1,4 @@
-name = "reallog-ai"
+name = "active-ai"
 main = "worker/index.ts"
 compatibility_date = "2025-03-01"
 compatibility_flags = ["nodejs_compat"]
@@ -8,7 +8,7 @@ directory = "./web"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "reallog-db"
+database_name = "active-db"
 database_id = ""
 
 [[kv_namespaces]]
@@ -17,5 +17,5 @@ id = ""
 
 [vars]
 ENVIRONMENT = "production"
-THEME = "reallog"
-DOMAIN = "real-log"
+THEME = "active"
+DOMAIN = "active"
