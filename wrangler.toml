@@ -1,0 +1,26 @@
+name = "log-origin"
+main = "worker/index.ts"
+compatibility_date = "2025-03-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./web/dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "log-origin-db"
+database_id = "placeholder-replace-after-create"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "placeholder-replace-after-create"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "log-origin-files"
+
+[vars]
+ENVIRONMENT = "production"
+
+# Secrets (set via wrangler secret put):
+# AUTH_HASH, DEEPSEEK_API_KEY, JWT_SECRET
