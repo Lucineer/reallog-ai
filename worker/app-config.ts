@@ -2,7 +2,7 @@
  * RealLog.ai custom configuration loader.
  * Loads personality, rules, theme, and templates from KV.
  */
-import type { Env } from '../../src/types.js';
+import type { Env } from '../src/types.js';
 
 export interface RealLogConfig {
   personality: string;
@@ -39,7 +39,7 @@ export async function loadRealLogConfig(env: Env): Promise<RealLogConfig> {
     const templateResults = await Promise.all(templateKeys.map(k => env.KV.get(k)));
     for (let i = 0; i < templateKeys.length; i++) {
       const key = templateKeys[i].replace('template:', '');
-      if (templateResults[i]) templates[key] = templateResults[i];
+      if (templateResults[i]) templates[key] = templateResults[i]!;
     }
 
     return { personality, rules, theme, templates };
