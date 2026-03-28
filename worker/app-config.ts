@@ -1,10 +1,10 @@
 /**
- * DMlog.ai custom configuration loader.
+ * RealLog.ai custom configuration loader.
  * Loads personality, rules, theme, and templates from KV.
  */
 import type { Env } from '../../src/types.js';
 
-export interface DMLogConfig {
+export interface RealLogConfig {
   personality: string;
   rules: any;
   theme: string;
@@ -12,9 +12,9 @@ export interface DMLogConfig {
 }
 
 /**
- * Load DMlog.ai custom configuration from KV.
+ * Load RealLog.ai custom configuration from KV.
  */
-export async function loadDMLogConfig(env: Env): Promise<DMLogConfig> {
+export async function loadRealLogConfig(env: Env): Promise<RealLogConfig> {
   try {
     const [personality, rulesRaw, theme] = await Promise.all([
       env.KV.get('config:personality') || '',
@@ -31,9 +31,9 @@ export async function loadDMLogConfig(env: Env): Promise<DMLogConfig> {
 
     // Load templates
     const templateKeys = [
-      'template:dnd_character', 'template:dnd_combat', 'template:dnd_npc',
-      'template:dnd_description', 'template:dnd_rules', 'template:dnd_loot',
-      'template:dnd_rest', 'template:dnd_social',
+      'template:morning_reflection', 'template:daily_journal', 'template:goal_checkin',
+      'template:gratitude', 'template:mindfulness', 'template:weekly_review',
+      'template:habit_tracking', 'template:mood_check',
     ];
     const templates: Record<string, string> = {};
     const templateResults = await Promise.all(templateKeys.map(k => env.KV.get(k)));
@@ -44,32 +44,32 @@ export async function loadDMLogConfig(env: Env): Promise<DMLogConfig> {
 
     return { personality, rules, theme, templates };
   } catch (error) {
-    console.error('Failed to load DMlog config from KV:', error);
+    console.error('Failed to load RealLog config from KV:', error);
     return getDefaultConfig();
   }
 }
 
 /**
- * Get the default system prompt for DMlog.ai.
+ * Get the default system prompt for RealLog.ai.
  */
 export async function getSystemPrompt(env: Env): Promise<string> {
-  const config = await loadDMLogConfig(env);
+  const config = await loadRealLogConfig(env);
   return config.personality || getDefaultConfig().personality;
 }
 
 /**
- * Get routing rules for DMlog.ai commands.
+ * Get routing rules for RealLog.ai commands.
  */
 export async function getRoutingRules(env: Env): Promise<any[]> {
-  const config = await loadDMLogConfig(env);
+  const config = await loadRealLogConfig(env);
   return config.rules;
 }
 
 /**
- * Get theme CSS for DMlog.ai.
+ * Get theme CSS for RealLog.ai.
  */
 export async function getThemeCSS(env: Env): Promise<string> {
-  const config = await loadDMLogConfig(env);
+  const config = await loadRealLogConfig(env);
   return config.theme;
 }
 
@@ -84,19 +84,19 @@ export async function getTemplate(key: string, env: Env): Promise<string | null>
 /**
  * Default fallback configuration.
  */
-function getDefaultConfig(): DMLogConfig {
+function getDefaultConfig(): RealLogConfig {
   return {
-    personality: `# DMlog.ai System Prompt
+    personality: `# RealLog.ai System Prompt
 
-You are DMlog.ai — an experienced Dungeon Master assistant for D&D 5e. 
-Help with character creation, combat tracking, rules lookups, and immersive descriptions. 
-Be theatrical but clear, rules-aware but flexible. Remember campaign context via the LOG.`,
+You are RealLog.ai — an AI journal companion for daily reflection, goal tracking, and personal growth.
+Help with mindful journaling, habit building, gratitude practice, and self-awareness.
+Be supportive and thoughtful, encouraging growth while honoring each person's unique journey. Remember reflection history via the LOG.`,
     rules: [],
-    theme: `/* DMlog.ai Theme - Fallback */
-body.dm-theme {
-  background-color: #1a0f0a;
-  color: #f5f1e6;
-  font-family: 'Crimson Text', serif;
+    theme: `/* RealLog.ai Theme - Fallback */
+body.reallog-theme {
+  background-color: #f8f9fa;
+  color: #2c3e50;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }`,
     templates: {}
   };
