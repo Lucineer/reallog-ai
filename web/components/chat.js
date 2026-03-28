@@ -248,12 +248,12 @@ export function Chat() {
     <div class="chat-area">
       <div class="chat-header">
         <button onclick=${() => sidebarOpen.value = !sidebarOpen.value}>☰</button>
-        <div class="chat-title">${activeSessionId ? '🏰 Adventure' : '🏰 DMlog.ai'}</div>
+        <div class="chat-title">${activeSessionId ? '📖 Journal' : '📖 RealLog.ai'}</div>
         <div class="actions">
           <button onclick=${() => setShowDice(!showDice)} title="Dice roller" class="icon-btn">🎲</button>
           <button onclick=${() => setDraftMode(!draftMode)} title="Compare responses" class="icon-btn">${draftMode ? '✕' : '🎯'}</button>
           <button onclick=${() => analyticsOpen.value = true} title="Analytics" class="icon-btn">📊</button>
-          <button onclick=${handleNewChat} title="New adventure" class="icon-btn">+ New</button>
+          <button onclick=${handleNewChat} title="New entry" class="icon-btn">+ New</button>
           <button onclick=${() => theme.value = theme.value === 'dark' ? 'light' : 'dark'} class="icon-btn">${theme.value === 'dark' ? '☀️' : '🌙'}</button>
           <button onclick=${() => settingsOpen.value = true} class="icon-btn">⚙</button>
           <button onclick=${handleLogout} title="Sign out" class="icon-btn">🚪</button>
@@ -267,14 +267,14 @@ export function Chat() {
           ${loadingSession ? html`<div class="empty-state"><span class="spinner" style="font-size:1.5rem;width:24px;height:24px"></span><div class="empty-hint" style="margin-top:.75rem">Loading campaign...</div></div>` :
             messages.length === 0 ? html`
               <div class="empty-state">
-                <div class="empty-icon">🏰</div>
-                <div class="empty-title">Your adventure awaits.</div>
-                <div class="empty-hint">Describe what you want to do, or ask the DM to set the scene.</div>
+                <div class="empty-icon">📖</div>
+                <div class="empty-title">How was your day?</div>
+                <div class="empty-hint">Reflect on your experiences, set intentions, or explore your thoughts.</div>
                 <div class="empty-prompts">
-                  <button class="prompt-chip" onclick=${() => setInput('I walk into the nearest tavern')}>🚪 Walk into a tavern</button>
-                  <button class="prompt-chip" onclick=${() => setInput('I search for treasure in the ancient ruins')}>⛏️ Search for treasure</button>
-                  <button class="prompt-chip" onclick=${() => setInput('A dragon appears on the horizon!')}>🐉 Spot a dragon</button>
-                  <button class="prompt-chip" onclick=${() => setInput('Tell me about the world I am in')}>🗺️ Learn about this world</button>
+                  <button class="prompt-chip" onclick=${() => setInput('Daily reflection: What went well today? What could I improve?')}>📝 Daily reflection</button>
+                  <button class="prompt-chip" onclick=${() => setInput('I want to set a goal for myself')}>🎯 Set a goal</button>
+                  <button class="prompt-chip" onclick=${() => setInput('Mindfulness check-in: How am I feeling right now?')}>🧘 Mindfulness check-in</button>
+                  <button class="prompt-chip" onclick=${() => setInput('I want to capture a thought before I forget it')}>💡 Capture a thought</button>
                 </div>
               </div>
             ` :
@@ -285,7 +285,7 @@ export function Chat() {
               <div class="message-bubble">
                 <div class="typing-indicator">
                   <div class="typing-dots"><span></span><span></span><span></span></div>
-                  <span>DM is narrating...</span>
+                  <span>Reflecting...</span>
                 </div>
               </div>
             </div>
