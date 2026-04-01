@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RealLog.ai — Life Journal</title>
+  <style>
+    :root {
+      --cream: #FFFBF0;
+      --cream-dark: #FFF5E1;
+      --brown: #78350F;
+      --brown-light: #92400E;
+      --brown-muted: #A16207;
+      --sage: #6B8E6B;
+      --sage-light: #8FB88F;
+      --sage-dark: #4A6B4A;
+      --warm-gray: #78716C;
+      --warm-border: #E7DDD3;
+      --danger: #DC2626;
+      --shadow: 0 2px 8px rgba(120, 53, 15, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: var(--cream);
+      color: var(--brown);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─────────────────────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, var(--brown), var(--brown-light));
+      color: var(--cream);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(120, 53, 15, 0.15);
+    }
+    .header h1 { font-size: 1.5rem; font-weight: 400; letter-spacing: 0.5px; }
+    .header nav { display: flex; gap: 0.5rem; }
+    .header nav button {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: var(--cream);
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .header nav button:hover { background: rgba(255,255,255,0.25); }
+    .header nav button.active { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.4); }
+
+    /* ─── Layout ─────────────────────────────────────────────────────────── */
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ─── Cards ──────────────────────────────────────────────────────────── */
+    .card {
+      background: white;
+      border: 1px solid var(--warm-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      color: var(--brown);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--warm-border);
+    }
+    .card h3 { font-size: 1rem; color: var(--brown-light); margin-bottom: 0.5rem; }
+
+    /* ─── Journal Editor ─────────────────────────────────────────────────── */
+    .journal-editor label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--warm-gray);
+      margin-bottom: 0.3rem;
+      margin-top: 1rem;
+    }
+    .journal-editor label:first-child { margin-top: 0; }
+
+    .journal-editor input[type="text"],
+    .journal-editor input[type="date"],
+    .journal-editor textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--warm-border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      background: var(--cream);
+      color: var(--brown);
+      transition: border-color 0.2s;
+    }
+    .journal-editor input:focus,
+    .journal-editor textarea:focus {
+      outline: none;
+      border-color: var(--sage);
+      box-shadow: 0 0 0 3px rgba(107, 142, 107, 0.15);
+    }
+    .journal-editor textarea { min-height: 200px; resize: vertical; }
+
+    /* ─── Mood Selector ──────────────────────────────────────────────────── */
+    .mood-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.3rem;
+    }
+    .mood-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--warm-border);
+      background: var(--cream);
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mood-btn:hover { border-color: var(--sage); transform: scale(1.1); }
+    .mood-btn.selected { border-color: var(--sage); background: var(--sage-light); transform: scale(1.1); }
+
+    /* ─── Tags ───────────────────────────────────────────────────────────── */
+    .tag-input-wrapper { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+    .tag {
+      background: var(--sage);
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .tag button {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 0.75rem;
+      padding: 0;
+      opacity: 0.7;
+    }
+    .tag button:hover { opacity: 1; }
+    .tag-input {
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.85rem;
+      background: transparent;
+      color: var(--brown);
+      min-width: 100px;
+    }
+
+    /* ─── Gratitude ──────────────────────────────────────────────────────── */
+    .gratitude-list { list-style: none; }
+    .gratitude-list li {
+      padding: 0.4rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--sage-dark);
+    }
+    .gratitude-list li::before { content: '\2764'; font-size: 0.7rem; color: var(--sage); }
+    .gratitude-add {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .gratitude-add input {
+      flex: 1;
+      padding: 0.4rem 0.6rem;
+      border: 1px solid var(--warm-border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      background: var(--cream);
+    }
+
+    /* ─── Buttons ────────────────────────────────────────────────────────── */
+    .btn {
+      padding: 0.6rem 1.4rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--brown); color: var(--cream); }
+    .btn-primary:hover { background: var(--brown-light); }
+    .btn-sage { background: var(--sage); color: white; }
+    .btn-sage:hover { background: var(--sage-dark); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--warm-border);
+      color: var(--warm-gray);
+    }
+    .btn-outline:hover { border-color: var(--brown); color: var(--brown); }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { opacity: 0.9; }
+    .btn-sm { padding: 0.3rem 0.8rem; font-size: 0.8rem; }
+
+    .actions { display: flex; gap: 0.5rem; margin-top: 1.5rem; }
+
+    /* ─── Mood Chart ─────────────────────────────────────────────────────── */
+    .mood-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 120px;
+      padding: 0.5rem 0;
+    }
+    .mood-bar {
+      flex: 1;
+      min-width: 8px;
+      max-width: 20px;
+      background: var(--sage);
+      border-radius: 4px 4px 0 0;
+      transition: height 0.3s;
+      position: relative;
+      cursor: pointer;
+    }
+    .mood-bar:hover { opacity: 0.8; }
+    .mood-bar .tooltip {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--brown);
+      color: var(--cream);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+    }
+    .mood-bar:hover .tooltip { display: block; }
+
+    /* ─── Pattern List ───────────────────────────────────────────────────── */
+    .pattern-item {
+      padding: 0.8rem;
+      border-left: 3px solid var(--sage);
+      margin-bottom: 0.8rem;
+      background: var(--cream-dark);
+      border-radius: 0 8px 8px 0;
+    }
+    .pattern-item .pattern-label { font-weight: 600; color: var(--brown); }
+    .pattern-item .pattern-desc { font-size: 0.85rem; color: var(--warm-gray); margin-top: 0.2rem; }
+
+    /* ─── Life Metrics ───────────────────────────────────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+    .metric-card {
+      text-align: center;
+      padding: 1rem;
+      background: var(--cream);
+      border-radius: 10px;
+      border: 1px solid var(--warm-border);
+    }
+    .metric-card .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--sage);
+    }
+    .metric-card .metric-label {
+      font-size: 0.8rem;
+      color: var(--warm-gray);
+      margin-top: 0.2rem;
+    }
+    .metric-card .metric-trend {
+      font-size: 0.75rem;
+      margin-top: 0.3rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    .trend-improving { background: #DCFCE7; color: #166534; }
+    .trend-stable { background: #FEF9C3; color: #854D0E; }
+    .trend-declining { background: #FEE2E2; color: #991B1B; }
+
+    /* ─── Year In Review ─────────────────────────────────────────────────── */
+    .review-hero {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(135deg, var(--cream-dark), white);
+      border-radius: 12px;
+      border: 1px solid var(--warm-border);
+      margin-bottom: 1.5rem;
+    }
+    .review-hero .year { font-size: 3rem; color: var(--brown); }
+    .review-hero .stat-row {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .review-hero .stat { text-align: center; }
+    .review-hero .stat .num { font-size: 1.5rem; color: var(--sage); font-weight: 700; }
+    .review-hero .stat .lbl { font-size: 0.75rem; color: var(--warm-gray); }
+
+    /* ─── Privacy Settings ───────────────────────────────────────────────── */
+    .privacy-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--warm-border);
+    }
+    .privacy-toggle:last-child { border-bottom: none; }
+    .privacy-toggle .label { font-size: 0.9rem; }
+    .privacy-toggle .desc { font-size: 0.75rem; color: var(--warm-gray); }
+
+    .toggle {
+      width: 44px;
+      height: 24px;
+      border-radius: 12px;
+      background: var(--warm-border);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+    }
+    .toggle.on { background: var(--sage); }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 0.2s;
+    }
+    .toggle.on::after { transform: translateX(20px); }
+
+    /* ─── Prompt Card ────────────────────────────────────────────────────── */
+    .prompt-card {
+      background: linear-gradient(135deg, var(--sage), var(--sage-dark));
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+    .prompt-card .prompt-label {
+      font-style: normal;
+      font-size: 0.75rem;
+      opacity: 0.8;
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ─── Entry List ─────────────────────────────────────────────────────── */
+    .entry-list { list-style: none; }
+    .entry-list li {
+      padding: 1rem;
+      border-bottom: 1px solid var(--warm-border);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .entry-list li:hover { background: var(--cream-dark); }
+    .entry-list li:last-child { border-bottom: none; }
+    .entry-list .entry-date { font-size: 0.8rem; color: var(--warm-gray); }
+    .entry-list .entry-title { font-size: 1rem; color: var(--brown); margin: 0.2rem 0; }
+    .entry-list .entry-mood { font-size: 0.85rem; }
+    .entry-list .entry-tags { display: flex; gap: 0.3rem; margin-top: 0.3rem; flex-wrap: wrap; }
+    .entry-list .entry-tags .tag { font-size: 0.7rem; padding: 0.1rem 0.4rem; }
+
+    /* ─── Anomaly Alert ──────────────────────────────────────────────────── */
+    .anomaly {
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .anomaly.low { background: #FEF3C7; border-left: 3px solid #F59E0B; }
+    .anomaly.medium { background: #FED7AA; border-left: 3px solid #F97316; }
+    .anomaly.high { background: #FEE2E2; border-left: 3px solid #DC2626; }
+
+    /* ─── Responsive ─────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .container { padding: 1rem; }
+      .header { padding: 1rem; flex-direction: column; gap: 0.8rem; }
+      .header nav { flex-wrap: wrap; justify-content: center; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <!-- ─── Header ────────────────────────────────────────────────────────── -->
+  <header class="header">
+    <h1>RealLog.ai — Life Journal</h1>
+    <nav id="nav">
+      <button class="active" data-panel="write">Write</button>
+      <button data-panel="mood">Mood</button>
+      <button data-panel="insights">Insights</button>
+      <button data-panel="year">Year in Review</button>
+      <button data-panel="gratitude">Gratitude</button>
+      <button data-panel="privacy">Privacy</button>
+    </nav>
+  </header>
+
+  <div class="container">
+    <!-- ─── Write Panel ─────────────────────────────────────────────────── -->
+    <div class="panel active" id="panel-write">
+      <div class="prompt-card">
+        <div class="prompt-label">Today's Reflection</div>
+        <div id="daily-prompt">What made you smile today?</div>
+      </div>
+
+      <div class="card journal-editor">
+        <h2>New Journal Entry</h2>
+        <label for="entry-date">Date</label>
+        <input type="date" id="entry-date" />
+
+        <label for="entry-title">Title</label>
+        <input type="text" id="entry-title" placeholder="Give today a title..." />
+
+        <label>How are you feeling?</label>
+        <div class="mood-selector" id="mood-selector">
+          <button class="mood-btn" data-mood="1" title="Very low">1</button>
+          <button class="mood-btn" data-mood="2" title="Low">2</button>
+          <button class="mood-btn" data-mood="3" title="Okay">3</button>
+          <button class="mood-btn" data-mood="4" title="Good">4</button>
+          <button class="mood-btn" data-mood="5" title="Great">5</button>
+        </div>
+
+        <label for="entry-body">Write your thoughts</label>
+        <textarea id="entry-body" placeholder="Let your thoughts flow..."></textarea>
+
+        <label>Tags</label>
+        <div class="tag-input-wrapper" id="tag-wrapper">
+          <input class="tag-input" id="tag-input" placeholder="Add tag, press Enter..." />
+        </div>
+
+        <label>Gratitude</label>
+        <ul class="gratitude-list" id="gratitude-list"></ul>
+        <div class="gratitude-add">
+          <input type="text" id="gratitude-input" placeholder="Something you're grateful for..." />
+          <button class="btn btn-sage btn-sm" id="gratitude-add-btn">Add</button>
+        </div>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="save-entry">Save Entry</button>
+          <button class="btn btn-outline" id="clear-entry">Clear</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Recent Entries</h2>
+        <ul class="entry-list" id="entry-list"></ul>
+      </div>
+    </div>
+
+    <!-- ─── Mood Panel ──────────────────────────────────────────────────── -->
+    <div class="panel" id="panel-mood">
+      <div class="card">
+        <h2>Mood Tracker — Last 30 Days</h2>
+        <div class="mood-chart" id="mood-chart"></div>
+      </div>
+      <div class="card">
+        <h2>Mood Summary</h2>
+        <div class="metrics-grid" id="mood-summary"></div>
+      </div>
+    </div>
+
+    <!-- ─── Insights Panel ──────────────────────────────────────────────── -->
+    <div class="panel" id="panel-insights">
+      <div class="card">
+        <h2>Life Metrics</h2>
+        <div class="metrics-grid" id="life-metrics"></div>
+      </div>
+      <div class="card">
+        <h2>Patterns</h2>
+        <div id="pattern-list"></div>
+      </div>
+      <div class="card">
+        <h2>Anomalies</h2>
+        <div id="anomaly-list"><p style="color: var(--warm-gray); font-size: 0.9rem;">No anomalies detected.</p></div>
+      </div>
+    </div>
+
+    <!-- ─── Year In Review Panel ────────────────────────────────────────── -->
+    <div class="panel" id="panel-year">
+      <div class="review-hero" id="review-hero">
+        <div class="year" id="review-year">2026</div>
+        <div class="stat-row" id="review-stats"></div>
+      </div>
+      <div class="card">
+        <h2>Monthly Mood</h2>
+        <div class="mood-chart" id="review-mood-chart"></div>
+      </div>
+      <div class="card">
+        <h2>Highlights</h2>
+        <ul id="review-highlights"></ul>
+      </div>
+      <div class="card">
+        <h2>Top Tags</h2>
+        <div id="review-tags" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+      </div>
+    </div>
+
+    <!-- ─── Gratitude Panel ─────────────────────────────────────────────── -->
+    <div class="panel" id="panel-gratitude">
+      <div class="card">
+        <h2>Gratitude Journal</h2>
+        <div class="metrics-grid" id="gratitude-stats"></div>
+      </div>
+      <div class="card">
+        <h2>Gratitude Log</h2>
+        <div id="gratitude-log"></div>
+      </div>
+    </div>
+
+    <!-- ─── Privacy Panel ───────────────────────────────────────────────── -->
+    <div class="panel" id="panel-privacy">
+      <div class="card">
+        <h2>Privacy Settings</h2>
+        <div class="privacy-toggle">
+          <div>
+            <div class="label">Encrypt Journal Entries</div>
+            <div class="desc">Client-side AES-256-GCM encryption for entry body text</div>
+          </div>
+          <button class="toggle on" data-key="encryptJournal"></button>
+        </div>
+        <div class="privacy-toggle">
+          <div>
+            <div class="label">Share Mood Data</div>
+            <div class="desc">Allow anonymized mood data for aggregate insights</div>
+          </div>
+          <button class="toggle" data-key="shareMoodData"></button>
+        </div>
+        <div class="privacy-toggle">
+          <div>
+            <div class="label">Auto-Redact PII</div>
+            <div class="desc">Automatically detect and redact personal information</div>
+          </div>
+          <button class="toggle on" data-key="redactPII"></button>
+        </div>
+        <div class="privacy-toggle">
+          <div>
+            <div class="label">Auto-Delete After (days)</div>
+            <div class="desc">0 = keep forever</div>
+          </div>
+          <input type="number" id="retention-days" value="0" min="0" max="3650"
+            style="width:80px;padding:0.3rem 0.5rem;border:1px solid var(--warm-border);border-radius:6px;font-family:inherit;text-align:center;" />
+        </div>
+        <div class="actions">
+          <button class="btn btn-sage" id="save-privacy">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── State ─────────────────────────────────────────────────────────────
+    let currentTags = [];
+    let currentGratitude = [];
+    let selectedMood = 0;
+    const token = () => localStorage.getItem('lo-token') || '';
+
+    // ─── Navigation ────────────────────────────────────────────────────────
+    document.querySelectorAll('#nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#nav button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const panel = document.getElementById('panel-' + btn.dataset.panel);
+        if (panel) panel.classList.add('active');
+        loadPanel(btn.dataset.panel);
+      });
+    });
+
+    // ─── API helpers ───────────────────────────────────────────────────────
+    async function api(path, opts = {}) {
+      const res = await fetch('/v1' + path, {
+        ...opts,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token(),
+          ...(opts.headers || {}),
+        },
+      });
+      return res.json();
+    }
+
+    // ─── Daily Prompt ──────────────────────────────────────────────────────
+    const prompts = [
+      'What made you smile today?',
+      'What challenged you this week, and what did you learn?',
+      'Describe a moment of peace you experienced recently.',
+      'What are three things you are grateful for right now?',
+      'How did you show kindness to yourself today?',
+      'What is something you are looking forward to?',
+      'Describe a conversation that left an impression on you.',
+      'What habit would you like to build or break?',
+      'What does a perfect day look like for you?',
+      'Write about someone who has influenced your life positively.',
+    ];
+    document.getElementById('daily-prompt').textContent = prompts[Math.floor(Math.random() * prompts.length)];
+
+    // ─── Entry Date Default ────────────────────────────────────────────────
+    document.getElementById('entry-date').value = new Date().toISOString().slice(0, 10);
+
+    // ─── Mood Selector ─────────────────────────────────────────────────────
+    document.querySelectorAll('.mood-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedMood = parseInt(btn.dataset.mood);
+      });
+    });
+
+    // ─── Tags ──────────────────────────────────────────────────────────────
+    function renderTags() {
+      const wrapper = document.getElementById('tag-wrapper');
+      wrapper.querySelectorAll('.tag').forEach(t => t.remove());
+      const input = document.getElementById('tag-input');
+      currentTags.forEach((tag, i) => {
+        const el = document.createElement('span');
+        el.className = 'tag';
+        el.innerHTML = tag + ' <button data-idx="' + i + '">&times;</button>';
+        el.querySelector('button').addEventListener('click', () => {
+          currentTags.splice(i, 1);
+          renderTags();
+        });
+        wrapper.insertBefore(el, input);
+      });
+    }
+    document.getElementById('tag-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && e.target.value.trim()) {
+        e.preventDefault();
+        currentTags.push(e.target.value.trim());
+        e.target.value = '';
+        renderTags();
+      }
+    });
+
+    // ─── Gratitude ─────────────────────────────────────────────────────────
+    function renderGratitude() {
+      const list = document.getElementById('gratitude-list');
+      list.innerHTML = currentGratitude.map((g, i) =>
+        '<li>' + g + ' <button class="btn btn-sm btn-outline" data-idx="' + i + '">&times;</button></li>'
+      ).join('');
+      list.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentGratitude.splice(parseInt(btn.dataset.idx), 1);
+          renderGratitude();
+        });
+      });
+    }
+    document.getElementById('gratitude-add-btn').addEventListener('click', () => {
+      const input = document.getElementById('gratitude-input');
+      if (input.value.trim()) {
+        currentGratitude.push(input.value.trim());
+        input.value = '';
+        renderGratitude();
+      }
+    });
+    document.getElementById('gratitude-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('gratitude-add-btn').click();
+      }
+    });
+
+    // ─── Save Entry ────────────────────────────────────────────────────────
+    document.getElementById('save-entry').addEventListener('click', async () => {
+      const date = document.getElementById('entry-date').value;
+      const title = document.getElementById('entry-title').value;
+      const body = document.getElementById('entry-body').value;
+      if (!date || !title || !body || !selectedMood) {
+        alert('Please fill in date, title, body, and mood.');
+        return;
+      }
+      const res = await api('/journal', {
+        method: 'POST',
+        body: JSON.stringify({ date, title, body, mood: selectedMood, tags: currentTags, gratitude: currentGratitude }),
+      });
+      if (res.id) {
+        document.getElementById('entry-title').value = '';
+        document.getElementById('entry-body').value = '';
+        currentTags = [];
+        currentGratitude = [];
+        selectedMood = 0;
+        document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+        renderTags();
+        renderGratitude();
+        loadEntries();
+      }
+    });
+
+    document.getElementById('clear-entry').addEventListener('click', () => {
+      document.getElementById('entry-title').value = '';
+      document.getElementById('entry-body').value = '';
+      currentTags = [];
+      currentGratitude = [];
+      selectedMood = 0;
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+      renderTags();
+      renderGratitude();
+    });
+
+    // ─── Load Entries ──────────────────────────────────────────────────────
+    async function loadEntries() {
+      const res = await api('/journal');
+      const list = document.getElementById('entry-list');
+      const entries = res.entries || [];
+      if (entries.length === 0) {
+        list.innerHTML = '<li style="color:var(--warm-gray);font-style:italic;">No entries yet. Start writing!</li>';
+        return;
+      }
+      list.innerHTML = entries.map(e =>
+        '<li data-id="' + e.id + '">' +
+        '<div class="entry-date">' + e.date + '</div>' +
+        '<div class="entry-title">' + e.title + '</div>' +
+        '<div class="entry-mood">Mood: ' + e.mood + '/5</div>' +
+        (e.tags.length ? '<div class="entry-tags">' + e.tags.map(t => '<span class="tag">' + t + '</span>').join('') + '</div>' : '') +
+        '</li>'
+      ).join('');
+      list.querySelectorAll('li').forEach(li => {
+        li.addEventListener('click', () => {
+          // Load entry for editing
+          const entry = entries.find(e => e.id === li.dataset.id);
+          if (entry) {
+            document.getElementById('entry-date').value = entry.date;
+            document.getElementById('entry-title').value = entry.title;
+            document.getElementById('entry-body').value = entry.body;
+            selectedMood = entry.mood;
+            currentTags = [...entry.tags];
+            currentGratitude = [...entry.gratitude];
+            document.querySelectorAll('.mood-btn').forEach(b => {
+              b.classList.toggle('selected', parseInt(b.dataset.mood) === selectedMood);
+            });
+            renderTags();
+            renderGratitude();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      });
+    }
+
+    // ─── Panel Loaders ─────────────────────────────────────────────────────
+    async function loadPanel(name) {
+      if (name === 'write') loadEntries();
+      if (name === 'mood') loadMood();
+      if (name === 'insights') loadInsights();
+      if (name === 'year') loadYearInReview();
+      if (name === 'gratitude') loadGratitude();
+      if (name === 'privacy') loadPrivacy();
+    }
+
+    async function loadMood() {
+      const res = await api('/mood');
+      const chart = document.getElementById('mood-chart');
+      const data = res.history || [];
+      if (data.length === 0) {
+        chart.innerHTML = '<p style="color:var(--warm-gray);font-style:italic;">Not enough data yet.</p>';
+        return;
+      }
+      chart.innerHTML = data.map(d => {
+        const pct = (d.avgMood / 5) * 100;
+        return '<div class="mood-bar" style="height:' + pct + '%"><div class="tooltip">' + d.date + ': ' + d.avgMood + '/5</div></div>';
+      }).join('');
+
+      const summary = document.getElementById('mood-summary');
+      summary.innerHTML =
+        '<div class="metric-card"><div class="metric-value">' + (res.avg || 0) + '</div><div class="metric-label">Avg Mood</div></div>' +
+        '<div class="metric-card"><div class="metric-value">' + (res.count || 0) + '</div><div class="metric-label">Entries</div></div>';
+    }
+
+    async function loadInsights() {
+      const [metricsRes, patternsRes, anomaliesRes] = await Promise.all([
+        api('/insights/metrics'), api('/insights/patterns'), api('/insights/anomalies'),
+      ]);
+      const m = metricsRes;
+      const trendClass = m.trend === 'improving' ? 'trend-improving' : m.trend === 'declining' ? 'trend-declining' : 'trend-stable';
+      document.getElementById('life-metrics').innerHTML =
+        '<div class="metric-card"><div class="metric-value">' + m.wellbeing + '</div><div class="metric-label">Wellbeing</div><div class="metric-trend ' + trendClass + '">' + m.trend + '</div></div>' +
+        '<div class="metric-card"><div class="metric-value">' + m.consistency + '</div><div class="metric-label">Consistency</div></div>' +
+        '<div class="metric-card"><div class="metric-value">' + m.positivity + '</div><div class="metric-label">Positivity</div></div>' +
+        '<div class="metric-card"><div class="metric-value">' + m.gratitude + '</div><div class="metric-label">Gratitude</div></div>' +
+        '<div class="metric-card"><div class="metric-value">' + m.selfAwareness + '</div><div class="metric-label">Self-Awareness</div></div>';
+
+      const patterns = patternsRes.patterns || [];
+      document.getElementById('pattern-list').innerHTML = patterns.length
+        ? patterns.map(p => '<div class="pattern-item"><div class="pattern-label">' + p.label + '</div><div class="pattern-desc">' + p.description + '</div></div>').join('')
+        : '<p style="color:var(--warm-gray);font-size:0.9rem;">Not enough data for patterns. Keep journaling!</p>';
+
+      const anomalies = anomaliesRes.anomalies || [];
+      document.getElementById('anomaly-list').innerHTML = anomalies.length
+        ? anomalies.map(a => '<div class="anomaly ' + a.severity + '">' + a.description + '</div>').join('')
+        : '<p style="color:var(--warm-gray);font-size:0.9rem;">No anomalies detected.</p>';
+    }
+
+    async function loadYearInReview() {
+      const year = new Date().getFullYear();
+      const res = await api('/journal/year-in-review?year=' + year);
+      document.getElementById('review-year').textContent = res.year;
+      document.getElementById('review-stats').innerHTML =
+        '<div class="stat"><div class="num">' + res.totalEntries + '</div><div class="lbl">Entries</div></div>' +
+        '<div class="stat"><div class="num">' + res.avgMood + '</div><div class="lbl">Avg Mood</div></div>' +
+        '<div class="stat"><div class="num">' + res.longestStreak + '</div><div class="lbl">Best Streak</div></div>';
+
+      const chart = document.getElementById('review-mood-chart');
+      chart.innerHTML = (res.moodByMonth || []).map(d => {
+        const pct = (d.avgMood / 5) * 100;
+        return '<div class="mood-bar" style="height:' + pct + '%"><div class="tooltip">' + d.date + ': ' + d.avgMood + '</div></div>';
+      }).join('');
+
+      document.getElementById('review-highlights').innerHTML = (res.highlights || []).map(h =>
+        '<li style="padding:0.3rem 0;color:var(--brown);font-size:0.9rem;">' + h + '</li>'
+      ).join('') || '<li style="color:var(--warm-gray);">No highlights yet.</li>';
+
+      document.getElementById('review-tags').innerHTML = (res.topTags || []).map(t =>
+        '<span class="tag">' + t + '</span>'
+      ).join('');
+    }
+
+    async function loadGratitude() {
+      const [logRes, statsRes] = await Promise.all([api('/gratitude'), api('/gratitude/stats')]);
+      const s = statsRes;
+      document.getElementById('gratitude-stats').innerHTML =
+        '<div class="metric-card"><div class="metric-value">' + s.totalDays + '</div><div class="metric-label">Days with Gratitude</div></div>' +
+        '<div class="metric-card"><div class="metric-value">' + s.totalItems + '</div><div class="metric-label">Total Items</div></div>' +
+        '<div class="metric-card"><div class="metric-value">' + s.avgPerDay + '</div><div class="metric-label">Avg per Day</div></div>';
+
+      const log = logRes.log || [];
+      document.getElementById('gratitude-log').innerHTML = log.length
+        ? log.map(g => '<div style="margin-bottom:0.8rem;"><strong style="color:var(--brown);">' + g.date + '</strong><ul class="gratitude-list">' +
+          g.items.map(i => '<li>' + i + '</li>').join('') + '</ul></div>').join('')
+        : '<p style="color:var(--warm-gray);font-style:italic;">Start adding gratitude items to your journal entries!</p>';
+    }
+
+    async function loadPrivacy() {
+      const res = await api('/insights/privacy');
+      document.querySelectorAll('.toggle').forEach(btn => {
+        const key = btn.dataset.key;
+        if (key && res[key] !== undefined) btn.classList.toggle('on', res[key]);
+      });
+      if (res.retentionDays !== undefined) document.getElementById('retention-days').value = res.retentionDays;
+    }
+
+    // Toggle buttons
+    document.querySelectorAll('.toggle').forEach(btn => {
+      btn.addEventListener('click', () => btn.classList.toggle('on'));
+    });
+
+    document.getElementById('save-privacy').addEventListener('click', async () => {
+      const settings = { retentionDays: parseInt(document.getElementById('retention-days').value) || 0 };
+      document.querySelectorAll('.toggle').forEach(btn => {
+        if (btn.dataset.key) settings[btn.dataset.key] = btn.classList.contains('on');
+      });
+      await api('/insights/privacy', { method: 'PUT', body: JSON.stringify(settings) });
+      alert('Privacy settings saved.');
+    });
+
+    // ─── Initial Load ──────────────────────────────────────────────────────
+    loadEntries();
+  </script>
+</body>
+</html>

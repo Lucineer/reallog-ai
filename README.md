@@ -48,8 +48,47 @@ log-origin is the engine. Themed forks add personality:
 - **studylog.ai** — AI tutor that remembers what you've learned
 - **makerlog.ai** — AI pair programmer that learns your style
 - **businesslog.ai** — AI assistant for operations and analytics
+- **RealLog.ai** — Life journal vessel for daily reflection, mood tracking, and personal growth
 
 Each fork customizes: system prompts, UI theme, routing rules, and feature set.
+
+## Life Journal (RealLog.ai)
+
+A privacy-first life journal with mood tracking, pattern insights, and year-in-review.
+
+### Journal Features
+
+- **Daily Journal** — Write entries with title, body, mood, tags, and gratitude
+- **Mood Tracker** — Track mood over time with visual charts and averages
+- **Pattern Insights** — Automatic detection of mood trends, recurring themes, and streaks
+- **Year in Review** — Annual summary with highlights, top tags, and monthly mood breakdown
+- **Gratitude Tracker** — Dedicated gratitude log with statistics
+- **Privacy Controls** — Client-side encryption, PII redaction, data retention policies
+- **Anomaly Detection** — Alerts for unusual mood changes and journaling gaps
+- **Life Metrics** — Composite wellbeing, consistency, positivity, and self-awareness scores
+
+### Journal API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/v1/journal` | List journal entries |
+| `POST` | `/v1/journal` | Create a new entry |
+| `GET` | `/v1/journal/:id` | Get a single entry |
+| `PUT` | `/v1/journal/:id` | Update an entry |
+| `DELETE` | `/v1/journal/:id` | Delete an entry |
+| `GET` | `/v1/journal/year-in-review` | Generate year-in-review summary |
+| `GET` | `/v1/mood` | Get mood history and averages |
+| `GET` | `/v1/insights/metrics` | Life metrics (wellbeing, consistency, etc.) |
+| `GET` | `/v1/insights/patterns` | Detected patterns and trends |
+| `GET` | `/v1/insights/anomalies` | Anomaly alerts |
+| `GET` | `/v1/insights/privacy` | Get privacy settings |
+| `PUT` | `/v1/insights/privacy` | Update privacy settings |
+| `GET` | `/v1/gratitude` | Gratitude log |
+| `GET` | `/v1/gratitude/stats` | Gratitude statistics |
+
+### Journal UI
+
+Access the journal interface at `/journal.html` — warm cream (`#FFFBF0`), brown (`#78350F`), and sage green (`#6B8E6B`) theme.
 
 ## Research
 
