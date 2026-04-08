@@ -1,46 +1,40 @@
-# reallog-ai
+# Real Estate, Real Intelligence
 
-You write a journal. This tool reads it, looking for subtle, factual patterns in your own words over time. It is a self-hosted, private assistant for your thoughts.
-
-[Live instance](https://reallog-ai.casey-digennaro.workers.dev)
-
-## Why This Exists
-
-Many journal apps store your data or only play it back. This one acts as a quiet reader. It processes your entries to point out recurring topics, timing, and connections you might have missed, based solely on the text you provide.
-
-## Quick Start
-
-1.  **Fork** this repository.
-2.  **Deploy** it to Cloudflare Workers:
-    ```bash
-    npx wrangler deploy
-    ```
-3.  Set your `DEEPSEEK_API_KEY` (or key for another compatible LLM provider) as a Cloudflare secret.
-
-The application is now yours. You own the code and the data.
+> RealLog.ai — AI assistant for real estate. Property analysis, market data, client management. Part of the Lucineer ecosystem.
 
 ## What It Does
 
-*   **Pattern Recognition:** It identifies mentions of specific people, topics, or emotions and notes their frequency and context (e.g., "mentioned 'procrastination' three times, each following a log about late work").
-*   **Private Analysis:** Your journal entries are stored as plain text in your own Cloudflare KV storage and are only processed when you actively use the site.
-*   **Self-Hosted:** You control the API keys, logic, and data. You can export all entries at any time.
-*   **Adaptable:** You can modify the analysis prompts and logic in the source code to focus on what matters to you.
+- Comparative market analysis
+- Property valuation estimates
+- Client communication templates
+- Open house planning and follow-ups
+- Neighborhood demographics and trends
+- Investment property ROI calculations
 
-## One Specific Limitation
+## How It Works
 
-Pattern recognition is most effective after you have accumulated at least 10-15 entries. With fewer entries, the connections it can surface will be limited.
+reallog-ai is a themed Cocapn instance. Behind the scenes:
 
-## Technical Notes
+- **Equipment** — What it perceives: your notes, documents, inputs
+- **Skills** — How it thinks: domain expertise, reasoning patterns
+- **Context** — What it remembers: conversation history, progress
 
-*   Built for Cloudflare Workers. Zero npm dependencies.
-*   Uses a simple vector similarity search for topic matching.
-*   Compatible with any LLM API that follows the OpenAI format (e.g., DeepSeek, OpenAI, Anthropic).
-*   MIT Licensed.
+## The Ecosystem
 
-<div style="text-align:center;padding:16px;color:#64748b;font-size:.8rem"><a href="https://the-fleet.casey-digennaro.workers.dev" style="color:#64748b">The Fleet</a> &middot; <a href="https://cocapn.ai" style="color:#64748b">Cocapn</a></div>
+- **Layer 1 — Touch:** reallog-ai, studylog.ai, activelog.ai, dmlog.ai — "It just works."
+- **Layer 2 — Operate:** cocapn.ai / cocapn.com — "Customize and manage."
+- **Layer 3 — Build:** deckboss.ai / deckboss.net / capitaine.ai — "Design systems, open the hood."
+
+## Open Source
+
+MIT. Fork, customize, self-host. The agent IS the repo.
+
+## Related
+
+- [Cocapn](https://github.com/Lucineer/cocapn-ai) — Agent runtime
+- [Deckboss](https://github.com/Lucineer/deckboss) — Build custom agents
+- [The Fleet](https://github.com/Lucineer/the-fleet) — 200+ AI vessels
 
 ---
 
-<i>Built with [Cocapn](https://github.com/Lucineer/cocapn-ai) — the open-source agent runtime.</i>
-<i>Part of the [Lucineer fleet](https://github.com/Lucineer)</i>
-
+Built by [Superinstance](https://github.com/superinstance) & [Lucineer](https://github.com/Lucineer) (DiGennaro et al.)
